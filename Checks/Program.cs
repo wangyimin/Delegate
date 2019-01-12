@@ -19,7 +19,7 @@ namespace Checks
             return _f.GetType()
                 .GetMethod("Evaluate")
                 .MakeGenericMethod(_o1.GetType())
-                .Invoke(_f, new object[] { Operator.ADD, _o1, _o2 });
+                .Invoke(_f, new object[] { _operator, _o1, _o2 });
         }
     }
 }
