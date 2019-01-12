@@ -7,19 +7,11 @@ namespace Checks
     {
         static void Main(string[] args)
         {
-            string o1 = "1";
-            string o2 = "2";
-            var r = _wrapper(new Factory(), Operator.ADD, o1, o2);
+            Expression e = new Expression("1", Operator.ADD, new Expression("2", Operator.ADD, new Expression("3", Operator.ADD, "4")));
+            Trace.WriteLine(e);
 
+            var r = e.Result();
             Trace.WriteLine(r);
-        }
-
-        private static object _wrapper(Factory _f, Operator _operator, object _o1, object _o2)
-        {
-            return _f.GetType()
-                .GetMethod("Evaluate")
-                .MakeGenericMethod(_o1.GetType())
-                .Invoke(_f, new object[] { _operator, _o1, _o2 });
         }
     }
 }
