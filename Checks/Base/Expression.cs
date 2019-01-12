@@ -1,4 +1,6 @@
-﻿namespace Checks.Base
+﻿using System;
+
+namespace Checks.Base
 {
     class Expression
     {
@@ -26,9 +28,13 @@
         {
             Factory _f = new Factory();
 
-            if (_o2 is Expression _exp)
+            if (_o1 is Expression _exp1)
             {
-                return _eval(_f, _operator, _o1, _result(_exp._o1, _exp._operator, _exp._o2));
+                return _result(_result(_exp1._o1, _exp1._operator, _exp1._o2), _operator, _o2);
+            }
+            else if (_o2 is Expression _exp2)
+            {
+                return _result(_o1, _operator, _result(_exp2._o1, _exp2._operator, _exp2._o2));
             }
             else
             {
@@ -38,9 +44,21 @@
 
         private object _eval(Factory _f, Operator _operator, object _o1, object _o2)
         {
+            Type _r;
+            if (_operator == Operator.EQ 
+                || _operator == Operator.NE
+                || _operator == Operator.GT
+                || _operator == Operator.GE
+                || _operator == Operator.LT
+                || _operator == Operator.LE
+                )
+                _r = typeof(bool);
+            else
+                _r = _o1.GetType();
+
             return _f.GetType()
                 .GetMethod("Evaluate")
-                .MakeGenericMethod(_o1.GetType())
+                .MakeGenericMethod(new Type[] {_o1.GetType(), _r})
                 .Invoke(_f, new object[] { _operator, _o1, _o2 });
         }
     }
