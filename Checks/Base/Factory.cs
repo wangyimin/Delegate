@@ -22,10 +22,10 @@ namespace Checks.Base
                 );
         }
 
-        public T Evaluate<T>(Operator _operator, T o1, T o2)
+        public T Evaluate<T>(Operator _operator, T _o1, T _o2)
         {
             Evaluate<T> _calc = Get<T>(_operator);
-            return _calc(o1, o2);
+            return _calc(_o1, _o2);
         }
 
         private string _getMethod(Operator _operator)
@@ -43,13 +43,13 @@ namespace Checks.Base
             return r;
         }
 
-        private int _add(int a, int b)
+        private int _add(int _a, int _b)
         {
-            return a + b;
+            return _a + _b;
         }
-        private string _add(string a, string b)
+        private string _add(string _a, string _b)
         {
-            return a + b;
+            return _a + _b;
         }
 
     }
