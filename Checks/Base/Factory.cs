@@ -3,20 +3,22 @@ using System.Reflection;
 
 namespace Checks.Base
 {
-    public delegate TResult Evaluate<T, TResult>(T o1, T o2);
+    public delegate TResult EvaluateS<T, TResult>(T o1, T o2);
+    public delegate TResult EvaluateM<T, TResult>(T o1, T[] o2);
+
     class Factory
     {
-        public Evaluate<T, TResult> Get<T, TResult>(Operator _operator)
+        private object _get<T, TResult>(Operator _operator, bool _multiple)
         {
-             return (Evaluate<T, TResult>)
+            return 
                 Delegate.CreateDelegate(
-                    typeof(Evaluate<T, TResult>), 
+                    (_multiple ? typeof(EvaluateM<T, TResult>) : typeof(EvaluateS<T, TResult>)), 
                     this, 
                     this.GetType().GetMethod(
                         _getMethod(_operator), 
                         BindingFlags.NonPublic | BindingFlags.Instance,
                         null,
-                        new Type[] { typeof(T), typeof(T) },
+                        new Type[] { typeof(T), (_multiple ? typeof(T[]) : typeof(T)) },
                         null
                     )
                 );
@@ -24,9 +26,16 @@ namespace Checks.Base
 
         public TResult Evaluate<T, TResult>(Operator _operator, T _o1, T _o2)
         {
-            Evaluate<T, TResult> _calc = Get<T, TResult>(_operator);
+            EvaluateS<T, TResult> _calc = (EvaluateS<T, TResult>)_get<T, TResult>(_operator, false);
             return _calc(_o1, _o2);
         }
+        
+        public TResult Evaluate<T, TResult>(Operator _operator, T _o1, T[] _o2)
+        {
+            EvaluateM<T, TResult> _calc = (EvaluateM<T, TResult>)_get<T, TResult>(_operator, true);
+            return _calc(_o1, _o2);
+        }
+        
 
         private string _getMethod(Operator _operator)
         {
@@ -42,6 +51,10 @@ namespace Checks.Base
             else if (_operator == Operator.AND)
             {
                 r = "_and";
+            }
+            else if (_operator == Operator.IN)
+            {
+                r = "_in";
             }
             else
             {
@@ -70,8 +83,20 @@ namespace Checks.Base
             else if (_a != null)
                 return _a.Equals(_b);
             else
-                return _b.Equals(_a);
+                return false;
         }
+        private bool _in(string _a, string[] _b)
+        {
+            if (_a == null)
+                return false;
+            
+            foreach (string _s in _b)
+                if (_a.Equals(_s))
+                    return true;
+
+            return false;
+        }
+
         private bool _and(bool _a, bool _b)
         {
             return _a && _b;

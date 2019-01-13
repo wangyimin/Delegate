@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Checks.Utils;
+using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Checks.Base
 {
@@ -16,7 +19,11 @@ namespace Checks.Base
 
         public override string ToString()
         {
-            return "(" + _o1 + _operator.Display() + _o2 + ")";
+            string s = _o2.ToString();
+            if (_o2 is Array)
+                s = StringUtils.Array2String(_o2 as object[]);
+
+            return "(" + _o1 + " " + _operator.Display() + " " + s + ")";
         }
 
         public object Result()
@@ -26,30 +33,35 @@ namespace Checks.Base
 
         private object _result(object _o1, Operator _operator, object _o2)
         {
-            Factory _f = new Factory();
+            Factory f = new Factory();
 
-            if (_o1 is Expression _exp1)
+            if (_o1 is Expression exp1)
             {
-                return _result(_result(_exp1._o1, _exp1._operator, _exp1._o2), _operator, _o2);
+                if (exp1._o2 is Array)
+                    return _result(_result(exp1._o1, exp1._operator, exp1._o2), _operator, _o2);
+                else
+                    return _result(_result(exp1._o1, exp1._operator, exp1._o2), _operator, _o2);
             }
-            else if (_o2 is Expression _exp2)
+            else if (_o2 is Expression exp2)
             {
-                return _result(_o1, _operator, _result(_exp2._o1, _exp2._operator, _exp2._o2));
+                return _result(_o1, _operator, _result(exp2._o1, exp2._operator, exp2._o2));
             }
             else
             {
-                return _eval(_f, _operator, _o1, _o2);
+                return _eval(f, _operator, _o1, _o2);
             }
         }
 
         private object _eval(Factory _f, Operator _operator, object _o1, object _o2)
         {
-            Type _r = _operator.ResultType()?? _o1.GetType();
+            Type r = _operator.ResultType()?? _o1.GetType();
 
-            return _f.GetType()
-                .GetMethod("Evaluate")
-                .MakeGenericMethod(new Type[] {_o1.GetType(), _r})
-                .Invoke(_f, new object[] { _operator, _o1, _o2 });
+            MethodInfo mi = _f.GetType().GetMethods()
+                .Where(el => "Evaluate".Equals(el.Name))
+                .Where(el=>el.GetParameters()[2].ParameterType.IsArray == (_o2 is Array))
+                .First();
+
+            return mi.MakeGenericMethod(new Type[] { _o1.GetType(), r }).Invoke(_f, new object[] { _operator, _o1, _o2 });
         }
     }
 }

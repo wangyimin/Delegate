@@ -16,6 +16,8 @@
         LT,
         [OperatorAttributes(Display = "<=", ResultType = typeof(bool))]
         LE,
+        [OperatorAttributes(Display = "in", ResultType = typeof(bool))]
+        IN,
         [OperatorAttributes(Display = "&&")]
         AND,
         [OperatorAttributes(Display = "")]
