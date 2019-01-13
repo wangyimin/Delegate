@@ -44,17 +44,7 @@ namespace Checks.Base
 
         private object _eval(Factory _f, Operator _operator, object _o1, object _o2)
         {
-            Type _r;
-            if (_operator == Operator.EQ 
-                || _operator == Operator.NE
-                || _operator == Operator.GT
-                || _operator == Operator.GE
-                || _operator == Operator.LT
-                || _operator == Operator.LE
-                )
-                _r = typeof(bool);
-            else
-                _r = _o1.GetType();
+            Type _r = _operator.ResultType()?? _o1.GetType();
 
             return _f.GetType()
                 .GetMethod("Evaluate")

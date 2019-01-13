@@ -14,5 +14,13 @@ namespace Checks.Base
                             .GetCustomAttribute<OperatorAttributes>()
                             .Display;
         }
+        public static Type ResultType(this Enum e)
+        {
+            return e.GetType()
+                            .GetMember(e.ToString())
+                            .First()
+                            .GetCustomAttribute<OperatorAttributes>()
+                            .ResultType;
+        }
     }
 }

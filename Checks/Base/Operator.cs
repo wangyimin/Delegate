@@ -4,17 +4,17 @@
     {
         [OperatorAttributes(Display = "+")]
         ADD,
-        [OperatorAttributes(Display = "==")]
+        [OperatorAttributes(Display = "==", ResultType = typeof(bool))]
         EQ,
-        [OperatorAttributes(Display = "<>")]
+        [OperatorAttributes(Display = "<>", ResultType = typeof(bool))]
         NE,
-        [OperatorAttributes(Display = ">")]
+        [OperatorAttributes(Display = ">", ResultType = typeof(bool))]
         GT,
-        [OperatorAttributes(Display = ">=")]
+        [OperatorAttributes(Display = ">=", ResultType = typeof(bool))]
         GE,
-        [OperatorAttributes(Display = "<")]
+        [OperatorAttributes(Display = "<", ResultType = typeof(bool))]
         LT,
-        [OperatorAttributes(Display = "<=")]
+        [OperatorAttributes(Display = "<=", ResultType = typeof(bool))]
         LE,
         [OperatorAttributes(Display = "&&")]
         AND,
