@@ -36,20 +36,11 @@ namespace Checks.Base
             Factory f = new Factory();
 
             if (_o1 is Expression exp1)
-            {
-                if (exp1._o2 is Array)
-                    return _result(_result(exp1._o1, exp1._operator, exp1._o2), _operator, _o2);
-                else
-                    return _result(_result(exp1._o1, exp1._operator, exp1._o2), _operator, _o2);
-            }
+                return _result(_result(exp1._o1, exp1._operator, exp1._o2), _operator, _o2);
             else if (_o2 is Expression exp2)
-            {
                 return _result(_o1, _operator, _result(exp2._o1, exp2._operator, exp2._o2));
-            }
             else
-            {
                 return _eval(f, _operator, _o1, _o2);
-            }
         }
 
         private object _eval(Factory _f, Operator _operator, object _o1, object _o2)
@@ -61,7 +52,8 @@ namespace Checks.Base
                 .Where(el=>el.GetParameters()[2].ParameterType.IsArray == (_o2 is Array))
                 .First();
 
-            return mi.MakeGenericMethod(new Type[] { _o1.GetType(), r }).Invoke(_f, new object[] { _operator, _o1, _o2 });
+            return mi.MakeGenericMethod(new Type[] { _o1.GetType(), r })
+                    .Invoke(_f, new object[] { _operator, _o1, _o2 });
         }
     }
 }
